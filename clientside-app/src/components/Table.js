@@ -1,7 +1,8 @@
 import React from "react";
 
-const Table = ( { stocks } ) => {
+const Table = ( { stocks, quantity, purchasedate } ) => {
 
+    const totalValue = quantity * stocks.latestPrice;
     
     return (
         <table id="stocks">
@@ -19,9 +20,9 @@ const Table = ( { stocks } ) => {
                         <tr key={stocks.symbol}>
                             <td>{stocks.symbol}</td>
                             <td>{stocks.latestPrice}</td>
-                            <td>{stocks.latestTime}</td>
-                            <td>{stocks.companyName}</td>
-                            <td>{stocks.changePercent}</td>
+                            <td>{quantity}</td>
+                            <td>{totalValue}</td>
+                            <td>{purchasedate}</td>
                             <td>{stocks.lastTradeTime}</td>
                     </tr>
 
