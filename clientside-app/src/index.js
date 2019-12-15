@@ -24,7 +24,8 @@ class App extends React.Component {
                 quantity: 0,
                 purchasedate: ""
             },
-            datum: []
+            datum: [],
+            oldStocks: []
         }
         this.handleInputChange =this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -67,6 +68,16 @@ class App extends React.Component {
         })
         .catch(console.log)
 
+        fetch("https://sandbox.iexapis.com/stable/stock/"+ this.state.post.name +"/chart/date/"+ this.state.post.purchasedate +"?chartByDay=true&token="+ APItoken +"&period=annual")
+        .then(res => res.json())
+        .then((data) => {
+          this.setState({ oldStocks: data[0] })
+        })
+        .catch(console.log)
+
+        
+        console.log("https://sandbox.iexapis.com/stable/stock/"+ this.state.post.name +"/chart/date/"+ this.state.post.purchasedate +"?chartByDay=true&token="+ APItoken +"&period=annual");
+        console.log("https://sandbox.iexapis.com/beta/stock/"+ this.state.post.name +"/quote/?token="+ APItoken +"&period=annual");
         ReactDOM.render(
             <App />,
             document.getElementById("root")
@@ -74,7 +85,6 @@ class App extends React.Component {
     }
     
     render() {
-        console.log( this.state.datum.name)
         return (
             <div className="App">
                 <Form 
@@ -82,7 +92,10 @@ class App extends React.Component {
                     post={this.state.post}
                     handleSubmit={this.handleSubmit}
                 />
-                <Table stocks = { this.state.stocks } quantity = {this.state.post.quantity} purchasedate = {this.state.post.purchasedate}/>
+                <Table 
+                    stocks = { this.state.stocks } 
+                    quantity = {this.state.post.quantity} 
+                    oldStocks = {this.state.oldStocks} />
             </div>
             
         );

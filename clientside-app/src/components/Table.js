@@ -1,9 +1,11 @@
 import React from "react";
 
-const Table = ( { stocks, quantity, purchasedate } ) => {
+/* const APIToken = "Tpk_bb33d8b9dfec4e11b6ec94cff09d5685"; */
 
-    const totalValue = quantity * stocks.latestPrice;
-    
+const Table = ( { stocks, quantity, purchasedate, oldStocks} ) => {
+    var totalValue = quantity * stocks.latestPrice;
+    /* var oldStocks = oldDateApiCall(stocks.symbol, purchasedate); 
+     */
     return (
         <table id="stocks">
             <thead id="stocks">
@@ -22,7 +24,7 @@ const Table = ( { stocks, quantity, purchasedate } ) => {
                             <td>{stocks.latestPrice}</td>
                             <td>{quantity}</td>
                             <td>{totalValue}</td>
-                            <td>{purchasedate}</td>
+                            <td>{oldStocks.close}</td>
                             <td>{stocks.lastTradeTime}</td>
                     </tr>
 
@@ -30,5 +32,17 @@ const Table = ( { stocks, quantity, purchasedate } ) => {
         </table>
     );
 }
+
+/* function oldDateApiCall(name, purchasedate){
+    var oldStocks = []; 
+    fetch("https://sandbox.iexapis.com/stable/stock/"+ name +"/chart/date/"+ purchasedate +"?chartByDay=true?token="+ APIToken +"&period=annual")
+        .then(res => res.json())
+        .then((data) => {
+          this.setState({ oldStocks: data })
+        })
+        .catch(console.log)
+    return oldStocks;
+} */
+
 
 export default Table
