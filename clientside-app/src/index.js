@@ -21,28 +21,17 @@ class App extends React.Component {
             stocks: [],
             post: {
                 name: "",
-                quantity: 0,
+                quantity: null,
                 purchasedate: ""
             },
             datum: [],
-            oldStocks: []
+            oldStocks: [],
+            rows:[],
+            buttonPressed: false
         }
         this.handleInputChange =this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
-
-    /* componentDidMount() {
-        fetch("https://sandbox.iexapis.com/beta/stock/"+ this.state.name +"/quote/?token="+ APItoken +"&period=annual")
-        .then(res => res.json())
-        .then((data) => {
-          this.setState({ stocks: data })
-        })
-        .catch(console.log)
-
-        fetch("/api/form-submit-url").then((data) => {
-            this.setState({formdata : data})
-        }).catch(console.log)
-    } */
 
     handleChange = e => {
         const { name, value } = e.target;
@@ -55,11 +44,6 @@ class App extends React.Component {
     
     handleSubmit(event){
         event.preventDefault();
-        /* this.setState(prevState => ({
-            datum: [...prevState.datum, prevState.post],
-            post: { name: "", quantity: 0, purchasedate: "" } 
-          }));
-          */
 
         fetch("https://sandbox.iexapis.com/beta/stock/"+ this.state.post.name +"/quote/?token="+ APItoken +"&period=annual")
         .then(res => res.json())
@@ -75,15 +59,17 @@ class App extends React.Component {
         })
         .catch(console.log)
 
+        this.setState({buttonPressed: true});
         
         console.log("https://sandbox.iexapis.com/stable/stock/"+ this.state.post.name +"/chart/date/"+ this.state.post.purchasedate +"?chartByDay=true&token="+ APItoken +"&period=annual");
         console.log("https://sandbox.iexapis.com/beta/stock/"+ this.state.post.name +"/quote/?token="+ APItoken +"&period=annual");
-        ReactDOM.render(
-            <App />,
-            document.getElementById("root")
-        );
     }
-    
+    buttonreset(){
+        if(this.state.buttonPressed){
+            this.setState({buttonPressed: false});
+        }
+        
+    }
     render() {
         return (
             <div className="App">
@@ -92,17 +78,67 @@ class App extends React.Component {
                     post={this.state.post}
                     handleSubmit={this.handleSubmit}
                 />
-                <Table 
+                <Table
                     stocks = { this.state.stocks } 
                     quantity = {this.state.post.quantity} 
-                    oldStocks = {this.state.oldStocks} />
+                    oldStocks = {this.state.oldStocks}
+                    rows = {this.state.rows}
+                    buttonPressed = {this.state.buttonPressed} />
+                    {this.buttonreset()}
             </div>
-            
         );
     }
 }
 export default App;
 
+function table(props){
+    return(            
+        <div>
+        <table id="stocks">
+            <thead id="stocks">
+                <tr id="stocks">
+                    <th id="stocks">Name</th>
+                    <th>Value</th>
+                    <th>Quantity</th>
+                    <th>Total Value</th>
+                    <th>Purchase Value</th>
+                    <th>Select</th>
+                </tr>
+            </thead> 
+            <tbody>
+            </tbody>
+        </table>
+        </div>
+    )
+}
+/*
+Click button -> Add Row -> Get API -> Add to Row 
+*/
+
+
+function addRows(props){
+    var newdata = {name:props.stocks.symbol, 
+        value:props.stocks.latestPrice, 
+        quantity:props.quantity, 
+        totalValue:props.totalValue,
+        purchaseValue:props.oldStocks.close,
+        select:props.stocks.lastTradeTime};
+    
+    this.setState({rows: this.state.rows.concat(newdata)});
+}   
+function rows(){
+    return this.state.rows.map((row,index) =>{
+        return (
+        <tr key={index}>
+            <td>{row.name}</td>
+            <td>{row.value}</td>
+            <td>{row.quantity}</td>
+            <td>{row.totalValue}</td>
+            <td>{row.purchaseValue}</td>
+            <td>{row.select}</td>)
+        </tr>);
+    });
+}
 /* class Form extends React.Component{
     constructor(props) {
         super(props);
