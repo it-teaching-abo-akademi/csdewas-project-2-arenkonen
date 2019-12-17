@@ -1,6 +1,7 @@
 import React from "react";
 
 export default ({ handleChange, handleSubmit, post}) =>{
+    console.log("3");
         return (
             <form onSubmit= {handleSubmit}>
                 <label>
@@ -15,7 +16,7 @@ export default ({ handleChange, handleSubmit, post}) =>{
                     Stock purchase date:
                     <input name="purchasedate" type="text" value={post.purchasedate} onChange={handleChange} />
                 </label>
-                <input type="submit" value="Submit" />
+                <input type="submit" value="Add Stock"/>
             </form>
         );
     }
