@@ -1,7 +1,6 @@
 import React from "react";
 
 export default ({ handleChange, handleSubmit, post}) =>{
-    console.log("3");
         return (
             <form onSubmit= {handleSubmit}>
                 <label>

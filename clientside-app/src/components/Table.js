@@ -7,17 +7,20 @@ class Table extends React.Component {
         this.state={
             rows:this.props.rows,
             stocks: [],
-            oldStocks: []
+            oldStocks: [],
+            apifetched1: false,
+            apifetched2: false,
+
         }
+        this.apiFetch = this.apiFetch.bind(this);
     }
     
     addRows(){
-        if(this.props.buttonPressed){
+        if(this.state.apifetched1 && this.state.apifetched1){
 
             var totalValue = this.props.post.quantity * this.state.stocks.latestPrice
 
-            console.log("5");
-            /* if(typeof this.state.oldStocks !== "undefined"){
+            if(typeof this.state.oldStocks !== "undefined"){
                 var newdata = {
                     name:this.state.stocks.symbol, 
                     value:this.state.stocks.latestPrice, 
@@ -34,10 +37,6 @@ class Table extends React.Component {
                     totalValue:totalValue,
                     purchaseValue:"0",
                     select:this.state.stocks.lastTradeTime};
-            } */
-            var newdata ={
-                name:this.props.post.name,
-                quantity:this.props.post.quantity
             }
            
             console.log(newdata);
@@ -55,47 +54,32 @@ class Table extends React.Component {
                 <td>{row.quantity}</td>
                 <td>{row.totalValue}</td>
                 <td>{row.purchaseValue}</td>
-                <td>{row.select}</td>
+                <td>{index}</td>
             </tr>);
         });
     }
-
-    //UPDATE FIXES IT BUT WHEN LIMITING UPDATE IT BREAKS REEE
-    /* componentDidUpdate(){
-        fetch("https://sandbox.iexapis.com/beta/stock/"+ this.props.post.name +"/quote/?token="+ APItoken +"&period=annual")
-        .then(res => res.json())
-        .then((data) => {
-          this.setState({ stocks: data })
-        })
-        .catch(console.log)
-
-        fetch("https://sandbox.iexapis.com/stable/stock/"+ this.props.post.name +"/chart/date/"+ this.props.post.purchasedate +"?chartByDay=true&token="+ APItoken +"&period=annual")
-        .then(res => res.json())
-        .then((data) => {
-          this.setState({ oldStocks: data[0] })
-        })
-        .catch(console.log)
-
-        console.log("https://sandbox.iexapis.com/stable/stock/"+ this.props.post.name +"/chart/date/"+ this.props.post.purchasedate +"?chartByDay=true&token="+ APItoken +"&period=annual");
-        console.log("https://sandbox.iexapis.com/beta/stock/"+ this.props.post.name +"/quote/?token="+ APItoken +"&period=annual");
-    }
-    shouldComponentUpdate(nextProps, nextState){
-        return this.props.buttonPressed;
-    } */
     
     apiFetch(){
         console.log(this.props.post.name)
         fetch("https://sandbox.iexapis.com/beta/stock/"+ this.props.post.name +"/quote/?token="+ APItoken +"&period=annual")
         .then(res => res.json())
         .then((data) => {
-          this.setState({ stocks: data })
+          this.setState({ stocks: data },() => {
+            this.setState({apifetched1:true});
+          })
         })
         .catch(console.log)
 
         fetch("https://sandbox.iexapis.com/stable/stock/"+ this.props.post.name +"/chart/date/"+ this.props.post.purchasedate +"?chartByDay=true&token="+ APItoken +"&period=annual")
         .then(res => res.json())
         .then((data) => {
-          this.setState({ oldStocks: data[0] })
+          this.setState({ oldStocks: data[0] },() => {
+            console.log("HER")
+            console.log(this.props.buttonPressed)
+            this.setState({apifetched2:true});
+            this.addRows()
+            
+         })
         })
         .catch(console.log)
         console.log(this.props.post.name)
@@ -107,13 +91,13 @@ class Table extends React.Component {
     render(){
         if (this.props.buttonPressed){
         return(                  
-            <div class="stock-table">
-            
-            {this.addRows()}
+            <div className="stock-table">
+            {this.apiFetch()}
+            {/* {this.addRows()} */}
             <table >
-                <thead >
-                    <tr >
-                        <th >Name</th>
+                <thead>
+                    <tr>
+                        <th>Name</th>
                         <th>Value</th>
                         <th>Quantity</th>
                         <th>Total Value</th>
@@ -180,7 +164,6 @@ class StockTables extends React.Component{
     handleSubmit(event){
         event.preventDefault();
         this.setState({buttonPressed: true});
-        console.log("1 SUBMIT!")
     }
 
     buttonreset(){
