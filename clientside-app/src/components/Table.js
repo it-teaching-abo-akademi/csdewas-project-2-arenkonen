@@ -28,7 +28,6 @@ class Table extends React.Component {
                     quantity: this.props.post.quantity,
                     totalValue: totalValue,
                     purchaseValue: this.state.oldStocks.close,
-                    select: this.state.stocks.lastTradeTime
                 };
             } else {
                 newdata = {
@@ -37,7 +36,6 @@ class Table extends React.Component {
                     quantity: this.props.post.quantity,
                     totalValue: totalValue,
                     purchaseValue: "0",
-                    select: this.state.stocks.lastTradeTime
                 };
             }
 
@@ -47,20 +45,20 @@ class Table extends React.Component {
     }
 
     rows() {
-        return this.state.rows.map((row, index) => {
+        return this.state.rows.map((row, i) => {
             return (
-                <tr key={index}>
+                <tr key={i}>
                     <td>{row.name}</td>
                     <td>{row.value}</td>
                     <td>{row.quantity}</td>
                     <td>{row.totalValue}</td>
                     <td>{row.purchaseValue}</td>
-                    <td>{index}</td>
+                    <td><button onClick={() => {this.removeRow({i})}}>Remove Row</button></td>
                 </tr>
             );
         });
     }
-
+    //Does two API fetches, one for current data and one for historical data, these are applied to the initial version of the table
     apiFetch() {
         console.log(this.props.post.name);
         fetch(
@@ -123,7 +121,7 @@ class Table extends React.Component {
                 "&period=annual"
         );
     }
-
+    //Does a API call to update the current value of all stocks in a table
     refresh() {
         return this.state.rows.map((row, index) => {
             return fetch(
@@ -139,6 +137,13 @@ class Table extends React.Component {
         });
     }
 
+    removeRow(i){         
+        var rows = [...this.state.rows];
+        console.log(i)
+        rows.splice(i.i, 1);
+        this.setState({rows});
+    }
+    //Renders a table with an API lookup if buttonPressed === True, otherwise without the API lookup
     render() {
         if (this.props.buttonPressed) {
             return (
@@ -153,7 +158,7 @@ class Table extends React.Component {
                                 <th>Quantity</th>
                                 <th>Total Value</th>
                                 <th>Purchase Value</th>
-                                <th>Select</th>
+                                <th>Number</th>
                             </tr>
                         </thead>
                         <tbody>{this.rows()}</tbody>
@@ -172,7 +177,7 @@ class Table extends React.Component {
                                 <th>Quantity</th>
                                 <th>Total Value</th>
                                 <th>Purchase Value</th>
-                                <th>Select</th>
+                                <th>Number</th>
                             </tr>
                         </thead>
                         <tbody>{this.rows()}</tbody>
