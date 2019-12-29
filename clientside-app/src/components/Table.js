@@ -10,21 +10,25 @@ class Table extends React.Component {
             oldStocks: [],
             apifetched1: false,
             apifetched2: false,
-            currentValue2: ""
+            currentValue2: "",
+            convert: 1,
+            dollar: false,
+            currency: "Dollar",
         };
         this.apiFetch = this.apiFetch.bind(this);
         this.refresh = this.refresh.bind(this);
+        this.currencySelect = this.currencySelect.bind(this);
     }
 
     addRows() {
         if (this.state.apifetched1 && this.state.apifetched1) {
             var totalValue =
-                this.props.post.quantity * this.state.stocks.latestPrice;
+                this.props.post.quantity * this.state.stocks.latestPrice * this.state.convert;
 
             if (typeof this.state.oldStocks !== "undefined") {
                 var newdata = {
                     name: this.state.stocks.symbol,
-                    value: this.state.stocks.latestPrice,
+                    value: this.state.stocks.latestPrice * this.state.convert,
                     quantity: this.props.post.quantity,
                     totalValue: totalValue,
                     purchaseValue: this.state.oldStocks.close,
@@ -111,7 +115,7 @@ class Table extends React.Component {
         );
     }
 
-    currentValueFetch(refreshName) {
+    /* currentValueFetch(refreshName) {
         console.log(refreshName);
         console.log(
             "https://sandbox.iexapis.com/beta/stock/" +
@@ -120,6 +124,18 @@ class Table extends React.Component {
                 APItoken +
                 "&period=annual"
         );
+    } */
+
+    currencySelect(){
+        if (this.state.dollar){
+            this.setState({convert: 1, dollar: false, currency: "Dollar" },
+                () => {this.refresh()});
+        }
+        else{
+            this.setState({convert:0.89, dollar: true, currency: "Euro"}, 
+                () => {this.refresh()});
+        }
+       
     }
     //Does a API call to update the current value of all stocks in a table
     refresh() {
@@ -130,7 +146,9 @@ class Table extends React.Component {
                 .then(data => {
                     this.setState({ currentValue2: data }, () => {
                         console.log(this.state.currentValue2.latestPrice);
-                        this.state.rows[index].value = this.state.currentValue2.latestPrice;
+                        console.log(this.state.convert);
+                        this.state.rows[index].value = this.state.currentValue2.latestPrice * this.state.convert;
+                        this.state.rows[index].totalValue = this.state.rows[index].totalValue * this.state.convert;
                     });
                 })
                 .catch(console.log);
@@ -169,6 +187,7 @@ class Table extends React.Component {
             return (
                 <div className="stock-table">
                     <button onClick={this.refresh}>Refresh</button>
+                    <button onClick={this.currencySelect}>Switch currency</button>
                     <table>
                         <thead>
                             <tr>
@@ -182,6 +201,7 @@ class Table extends React.Component {
                         </thead>
                         <tbody>{this.rows()}</tbody>
                     </table>
+                    <h3>Currency:{this.state.currency}</h3>
                 </div>
             );
     }
