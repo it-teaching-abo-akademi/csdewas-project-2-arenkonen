@@ -1,6 +1,7 @@
 import React from "react";
 import StockTables from "./Table.js";
 
+//Handles a portfolio and its removal
 class Portfolio extends React.Component{
    constructor(props){
         super(props);
@@ -16,6 +17,7 @@ class Portfolio extends React.Component{
     }
 
     render(){
+        //Checks if the remove portfolio button has been pressed and returns null if it has removing the portfolio
         if(!this.state.deleted){
             return (
                 <div className="portfolio col-5 col-s-12">
@@ -30,7 +32,7 @@ class Portfolio extends React.Component{
         
     }
 }
-
+//Handles the input of portfolio name
 class CreatePortfolio extends React.Component{
     constructor(props){
         super(props);

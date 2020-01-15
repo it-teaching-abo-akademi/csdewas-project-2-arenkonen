@@ -1,5 +1,6 @@
 import React from "react";
 
+//Input form for the stocks
 export default ({ handleChange, handleSubmit, post}) =>{
         return (
             <form onSubmit= {handleSubmit}>
@@ -12,6 +13,7 @@ export default ({ handleChange, handleSubmit, post}) =>{
                     <input name="quantity" type="number" value={post.quanitity} onChange={handleChange} />
                 </label>
                 <label>
+                {/* Date input only valid as YYYYMMDD */}
                     Stock purchase date:
                     <input name="purchasedate" type="text" value={post.purchasedate} onChange={handleChange} />
                 </label>

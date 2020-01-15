@@ -1,6 +1,8 @@
 import React from "react";
 import Form from "./Form.js"
 const APItoken = "Tpk_bb33d8b9dfec4e11b6ec94cff09d5685";
+
+//Handles everything that has to do with the table
 class Table extends React.Component {
     constructor(props) {
         super(props);
@@ -26,6 +28,7 @@ class Table extends React.Component {
     //Adds a new row to the array with all the information fetched from the API
     addRows() {
         if (this.state.apifetched1 && this.state.apifetched1) {
+            //.toFixed(2) rounds the numbers to display correctly as money
             var totalValue =
                 (this.props.post.quantity * this.state.stocks.latestPrice * this.state.convert).toFixed(2);
 
@@ -37,6 +40,7 @@ class Table extends React.Component {
                     totalPortfolioValue: totalValue,
                     purchaseValue: this.state.oldStocks.close,
                 };
+            //incase the input date isn't available the purchase value will be displayed as 0
             } else {
                 newdata = {
                     name: this.state.stocks.symbol,
@@ -47,7 +51,7 @@ class Table extends React.Component {
                 };
             }
 
-            console.log(newdata);
+            //concatenates the new data into the rows array which is used to build the table.
             this.setState({ rows: this.state.rows.concat(newdata) });
         }
     }
@@ -83,7 +87,9 @@ class Table extends React.Component {
                 });
             })
             .catch(console.log);
-
+        
+            /*Purchasedate is directly input into the API fetch rather than being checked to see if it is correct, 
+            this can lead to no data being gain from this API call.*/
         fetch(
             "https://sandbox.iexapis.com/stable/stock/" +
                 this.props.post.name +
@@ -106,6 +112,7 @@ class Table extends React.Component {
     //Does a API call to update the current value of all stocks in a table
     async refresh(){
         this.setState({allValue:0})
+        //For-loop is used here because array.map didn't work for some reason
         for (var i=0; i< this.state.rows.length; i++){
             await fetch( 
                 "https://sandbox.iexapis.com/beta/stock/" +this.state.rows[i].name+"/quote/?token=" + APItoken +"&period=annual")
@@ -121,14 +128,14 @@ class Table extends React.Component {
         }
     }
 
+    //Changes the convert amount between euro and dollar then calls refresh to update the table
     currencySelect(){
         if (this.state.dollar){
             this.setState({convert: 1, dollar: false, currency: "Dollar" },
                 () => {this.refresh()});
         }
         else{
-            //CHANGE BACK TO 0.89!!!!
-            this.setState({convert:0.1, dollar: true, currency: "Euro"}, 
+            this.setState({convert:0.89, dollar: true, currency: "Euro"}, 
                 () => {this.refresh()});
         }
        
@@ -140,15 +147,6 @@ class Table extends React.Component {
         this.setState({rows});
     }
 
-    //Calculates the totalValue of a single row
-    stockValue(index){
-        this.setState({allValue:0});
-        return this.state.rows.map((row, i) => {
-            return (
-                this.setState({allValue:parseFloat(this.state.allValue+row.totalValue).toFixed(2)})
-            );
-        });
-    }
 
     //Calculates the value of all stocks based on the totalValue
     totalPortfolioValue(){
@@ -164,6 +162,7 @@ class Table extends React.Component {
     }
 
     //Renders a table with an API lookup if buttonPressed === True, otherwise without the API lookup
+    //buttonPressed === True when the Add Stock button has been pressed, and a new stock is added to the table
     render() {
         if (this.props.buttonPressed) {
             return (
@@ -245,6 +244,7 @@ class StockTables extends React.Component{
         }
         
     }
+    //Handles the stock input form and stock table
     render() {
         return (   
             <div className="App">
