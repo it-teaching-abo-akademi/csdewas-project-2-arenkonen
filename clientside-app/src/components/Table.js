@@ -11,26 +11,30 @@ class Table extends React.Component {
             apifetched1: false,
             apifetched2: false,
             currentValue2: "",
+            // convert is used for exchange rate it is changed in currencySelect() to 0.89 if the currency is change to Euro    
             convert: 1,
             dollar: false,
             currency: "Dollar",
+            allValue: 0,
         };
         this.apiFetch = this.apiFetch.bind(this);
         this.refresh = this.refresh.bind(this);
         this.currencySelect = this.currencySelect.bind(this);
+        this.totalPortfolioValue = this.totalPortfolioValue.bind(this);
     }
 
+    //Adds a new row to the array with all the information fetched from the API
     addRows() {
         if (this.state.apifetched1 && this.state.apifetched1) {
             var totalValue =
-                this.props.post.quantity * this.state.stocks.latestPrice * this.state.convert;
+                (this.props.post.quantity * this.state.stocks.latestPrice * this.state.convert).toFixed(2);
 
             if (typeof this.state.oldStocks !== "undefined") {
                 var newdata = {
                     name: this.state.stocks.symbol,
-                    value: this.state.stocks.latestPrice * this.state.convert,
+                    value: (this.state.stocks.latestPrice * this.state.convert).toFixed(2),
                     quantity: this.props.post.quantity,
-                    totalValue: totalValue,
+                    totalPortfolioValue: totalValue,
                     purchaseValue: this.state.oldStocks.close,
                 };
             } else {
@@ -38,7 +42,7 @@ class Table extends React.Component {
                     name: this.state.stocks.symbol,
                     value: this.state.stocks.latestPrice,
                     quantity: this.props.post.quantity,
-                    totalValue: totalValue,
+                    totalPortfolioValue: totalValue,
                     purchaseValue: "0",
                 };
             }
@@ -47,16 +51,17 @@ class Table extends React.Component {
             this.setState({ rows: this.state.rows.concat(newdata) });
         }
     }
-
+    //Adds all information to the correct cell in the table in the current row with the array.map 
     rows() {
         return this.state.rows.map((row, i) => {
             return (
                 <tr key={i}>
                     <td>{row.name}</td>
-                    <td>{row.value}</td>
+                    <td>{(row.value)}</td>
                     <td>{row.quantity}</td>
-                    <td>{row.totalValue}</td>
+                    <td>{(row.quantity*row.value).toFixed(2)}</td>
                     <td>{row.purchaseValue}</td>
+                    {/* Adds a button to each row with the current row's key to be able to remove the row */}
                     <td><button onClick={() => {this.removeRow({i})}}>Remove Row</button></td>
                 </tr>
             );
@@ -64,7 +69,6 @@ class Table extends React.Component {
     }
     //Does two API fetches, one for current data and one for historical data, these are applied to the initial version of the table
     apiFetch() {
-        console.log(this.props.post.name);
         fetch(
             "https://sandbox.iexapis.com/beta/stock/" +
                 this.props.post.name +
@@ -97,34 +101,25 @@ class Table extends React.Component {
                 });
             })
             .catch(console.log);
-        console.log(
-            "https://sandbox.iexapis.com/stable/stock/" +
-                this.props.post.name +
-                "/chart/date/" +
-                this.props.post.purchasedate +
-                "?chartByDay=true&token=" +
-                APItoken +
-                "&period=annual"
-        );
-        console.log(
-            "https://sandbox.iexapis.com/beta/stock/" +
-                this.props.post.name +
-                "/quote/?token=" +
-                APItoken +
-                "&period=annual"
-        );
     }
-
-    /* currentValueFetch(refreshName) {
-        console.log(refreshName);
-        console.log(
-            "https://sandbox.iexapis.com/beta/stock/" +
-                refreshName +
-                "/quote/?token=" +
-                APItoken +
-                "&period=annual"
-        );
-    } */
+  
+    //Does a API call to update the current value of all stocks in a table
+    async refresh(){
+        this.setState({allValue:0})
+        for (var i=0; i< this.state.rows.length; i++){
+            await fetch( 
+                "https://sandbox.iexapis.com/beta/stock/" +this.state.rows[i].name+"/quote/?token=" + APItoken +"&period=annual")
+                .then(res => res.json())
+                .then(data =>{
+                    this.setState({ currentValue2: data }, () => {
+                        this.state.rows[i].value = (this.state.currentValue2.latestPrice * this.state.convert).toFixed(2);
+                        this.state.rows[i].totalValue = (this.state.currentValue2.latestPrice * this.state.rows[i].quantity * this.state.convert).toFixed(2);
+                        this.totalPortfolioValue();                    
+                    });
+                })
+                .catch(console.log);
+        }
+    }
 
     currencySelect(){
         if (this.state.dollar){
@@ -132,42 +127,48 @@ class Table extends React.Component {
                 () => {this.refresh()});
         }
         else{
-            this.setState({convert:0.89, dollar: true, currency: "Euro"}, 
+            //CHANGE BACK TO 0.89!!!!
+            this.setState({convert:0.1, dollar: true, currency: "Euro"}, 
                 () => {this.refresh()});
         }
        
     }
-    //Does a API call to update the current value of all stocks in a table
-    refresh() {
-        return this.state.rows.map((row, index) => {
-            return fetch(
-                "https://sandbox.iexapis.com/beta/stock/" +row.name+"/quote/?token=" +APItoken +"&period=annual")
-                .then(res => res.json())
-                .then(data => {
-                    this.setState({ currentValue2: data }, () => {
-                        console.log(this.state.currentValue2.latestPrice);
-                        console.log(this.state.convert);
-                        this.state.rows[index].value = this.state.currentValue2.latestPrice * this.state.convert;
-                        this.state.rows[index].totalValue = this.state.rows[index].totalValue * this.state.convert;
-                    });
-                })
-                .catch(console.log);
-        });
-    }
-
+    //Splices the selected row to remove it from the array of rows. 
     removeRow(i){         
         var rows = [...this.state.rows];
-        console.log(i)
         rows.splice(i.i, 1);
         this.setState({rows});
     }
+
+    //Calculates the totalValue of a single row
+    stockValue(index){
+        this.setState({allValue:0});
+        return this.state.rows.map((row, i) => {
+            return (
+                this.setState({allValue:parseFloat(this.state.allValue+row.totalValue).toFixed(2)})
+            );
+        });
+    }
+
+    //Calculates the value of all stocks based on the totalValue
+    totalPortfolioValue(){
+        this.setState({allValue:0});
+        var tempValue;
+        return this.state.rows.map((row, i) => {
+            tempValue = parseFloat(row.totalValue)
+            if(typeof tempValue === "number"){
+                    this.setState({allValue:this.state.allValue+tempValue})              
+            }
+            
+        });        
+    }
+
     //Renders a table with an API lookup if buttonPressed === True, otherwise without the API lookup
     render() {
         if (this.props.buttonPressed) {
             return (
                 <div className="stock-table">
                     {this.apiFetch()}
-                    {/* {this.addRows()} */}
                     <table>
                         <thead>
                             <tr>
@@ -202,10 +203,11 @@ class Table extends React.Component {
                         <tbody>{this.rows()}</tbody>
                     </table>
                     <h3>Currency:{this.state.currency}</h3>
+                    <h3>Total Value of all stocks: {this.state.allValue.toFixed(2)}</h3>
                 </div>
             );
     }
-}
+}   
 
 class StockTables extends React.Component{
     constructor(props) {

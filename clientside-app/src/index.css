@@ -59,17 +59,18 @@ ul {
     text-align: center;
 }
 
-/* .stock-table {
-    text-align: center;
-    border-collapse: collapse;
-    border: 3px solid #ddd;
-    overflow: auto;
-    max-height: 400px;
-
-} */
 .stock-table{
     overflow-y: scroll;
     max-height: 400px;
+}
+
+.portfolio{
+    background-color: aquamarine;
+/*     outline-style: solid;
+    outline-color: invert; */
+    border: 3px solid brown;
+    border-radius: 5px;
+    max-width: fit-content;
 }
 
 td, th {

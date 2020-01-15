@@ -18,7 +18,7 @@ class Portfolio extends React.Component{
     render(){
         if(!this.state.deleted){
             return (
-                <div>
+                <div className="portfolio col-5 col-s-12">
                     <h1>{this.state.portfolioName}</h1>
                     <StockTables />
                     <button onClick={this.RemovePortfolio}>Remove!</button>       
