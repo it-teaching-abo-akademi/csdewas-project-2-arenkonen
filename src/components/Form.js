@@ -14,7 +14,7 @@ export default ({ handleChange, handleSubmit, post}) =>{
                 </label>
                 <label>
                 {/* Date input only valid as YYYYMMDD */}
-                    Stock purchase date:
+                    Stock purchase date (Enter as YYYYMMDD):
                     <input name="purchasedate" type="text" value={post.purchasedate} onChange={handleChange} />
                 </label>
                 <input type="submit" value="Add Stock"/>
