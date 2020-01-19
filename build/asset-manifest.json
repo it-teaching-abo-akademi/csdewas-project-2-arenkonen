@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/csdewas-project-2-arenkonen/static/css/main.fe82fa91.chunk.css",
+    "main.js": "/csdewas-project-2-arenkonen/static/js/main.eb7cbf8e.chunk.js",
+    "main.js.map": "/csdewas-project-2-arenkonen/static/js/main.eb7cbf8e.chunk.js.map",
+    "runtime-main.js": "/csdewas-project-2-arenkonen/static/js/runtime-main.8316852a.js",
+    "runtime-main.js.map": "/csdewas-project-2-arenkonen/static/js/runtime-main.8316852a.js.map",
+    "static/js/2.4089c330.chunk.js": "/csdewas-project-2-arenkonen/static/js/2.4089c330.chunk.js",
+    "static/js/2.4089c330.chunk.js.map": "/csdewas-project-2-arenkonen/static/js/2.4089c330.chunk.js.map",
+    "index.html": "/csdewas-project-2-arenkonen/index.html",
+    "precache-manifest.bb63e798e2751845741fffa0daf90bd7.js": "/csdewas-project-2-arenkonen/precache-manifest.bb63e798e2751845741fffa0daf90bd7.js",
+    "service-worker.js": "/csdewas-project-2-arenkonen/service-worker.js",
+    "static/css/main.fe82fa91.chunk.css.map": "/csdewas-project-2-arenkonen/static/css/main.fe82fa91.chunk.css.map",
+    "static/js/2.4089c330.chunk.js.LICENSE": "/csdewas-project-2-arenkonen/static/js/2.4089c330.chunk.js.LICENSE"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8316852a.js",
+    "static/js/2.4089c330.chunk.js",
+    "static/css/main.fe82fa91.chunk.css",
+    "static/js/main.eb7cbf8e.chunk.js"
+  ]
+}
